@@ -29,10 +29,75 @@ std::pair<WUDatabase, ItemWeight> preProcess(const WUDatabase &db) {
   return make_pair(pdb, wgt_sum / item_cnt);
 }
 
+std::tuple<std::vector<ItemProbability>, std::vector<ItemProbability>, ItemWeight> determineExtensions(const WUDatabase &db) {
+  const int total_items = db.second.size();
+  std::vector<ItemProbability> max_prs(total_items, 0);
+  std::vector<ItemProbability> exp_sups(total_items, 0);
+  ItemWeight max_item_weight = 0;
+
+  for (const USequence &seq : db.first) {
+    std::vector<ItemProbability> seq_max_prs(total_items, 0);
+    for (const UItemset &itemset : seq) {
+      for (const auto [item, probability] : itemset) {
+        max_prs[item] = max(max_prs[item], probability);
+        max_item_weight = max(max_item_weight, db.second[item]);
+      }
+    }
+    for (ItemID item = 0; item < total_items; item++) {
+      exp_sups[item] += seq_max_prs[item];
+    }
+  }
+
+  return {max_prs, exp_sups, max_item_weight};
+}
+
+WUDatabase projectedDatabase(const WUDatabase &db, ItemID item) {
+  WUDatabase pdb;
+  pdb.second = db.second;
+
+  for (const USequence &seq : db.first) {
+    pdb.first.push_back({});
+    bool item_found = false;
+    for (const UItemset &itemset : seq) {
+      if (!item_found) {
+        if (itemset.find(item) == itemset.end()) continue;
+        item_found = true;
+        UItemset new_itemset = itemset;
+        while (!new_itemset.empty() and new_itemset.begin()->first <= item) {
+          new_itemset.erase(new_itemset.begin());
+        }
+        pdb.first.back().emplace_back(new_itemset);
+      }
+      else {
+        pdb.first.back().emplace_back(itemset);
+      }
+    }
+  }
+
+  return pdb;
+}
+
+void FUWSP(const double minWES, const WUDatabase &db, const ItemProbability seq_max_probs_product, const ItemWeight seq_max_item_weight, const ItemWeight sum_of_seq_item_weights, int cur_node_id) {
+  auto [max_prs, exp_sups, max_item_weight] = determineExtensions(db);
+  int total_items = db.second.size();
+  for (ItemID item = 0; item < total_items; item++) {
+    ItemProbability exp_sup_cap = seq_max_probs_product * exp_sups[item];
+    ItemWeight weight_cap = max(seq_max_item_weight, max_item_weight);
+    double w_exp_sup = exp_sup_cap * weight_cap;
+    if (w_exp_sup >= minWES) {
+      int child_node_id;
+      FUWSP(minWES, projectedDatabase(db, item), seq_max_probs_product * max_prs[item], max(seq_max_item_weight, db.second[item]), sum_of_seq_item_weights + db.second[item], child_node_id);
+    }
+  }
+}
+
 std::vector<Sequence> FUWS(const WUDatabase &db, const ItemProbability min_sup, const ItemWeight wgt_fct) {
   auto [pdb, WAM] = preProcess(db);
   double minWES = min_sup * db.first.size() * WAM * wgt_fct;
-  std::cerr << minWES << std::endl;
+
+  USeqTrie candidateTrie;
+  FUWSP(minWES, db, 1, 0, 0, 0);
+  WESCalc(db, candidateTrie);
 
   return {};
 }

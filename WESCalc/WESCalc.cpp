@@ -2,6 +2,11 @@
 #include <cassert>
 #include <algorithm>
 
+template<typename T>
+bool is_subset(const std::set<T> &superset, const std::set<T> &subset) {
+  return includes(superset.begin(), superset.end(), subset.begin(), subset.end());
+}
+
 void WESCalc(const WUDatabase &db, USeqTrie &candidate_trie) {
   for (const USequence &seq : db.first) {
     std::vector<double> max_support_dp(seq.size() + 1, 1);

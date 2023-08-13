@@ -1,4 +1,8 @@
 #include "../Utils/data_types.hpp"
+#include <cassert>
+
+#ifndef USEQTRIE_INCLUDED
+#define USEQTRIE_INCLUDED
 
 class Node {
 public:
@@ -11,6 +15,10 @@ public:
 
 class USeqTrie {
 public:
+  int total_items;
   std::vector<Node> nodes;
-  USeqTrie();
+  USeqTrie(int total_items);
+  int getChildNode(int node_id, char ext_type, ItemID item_id);
 };
+
+#endif

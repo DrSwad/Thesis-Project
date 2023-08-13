@@ -7,7 +7,7 @@
 int main() {
   WUDatabase db;
 
-  std::ifstream ifs("weights.txt");
+  std::ifstream ifs("Simulations/Simulation 0/weights.txt");
   std::map<std::string, int> item_id_map;
   {
     std::map<std::string, ItemWeight> mp;
@@ -25,7 +25,7 @@ int main() {
   }
   ifs.close();
 
-  ifs.open("db.txt");
+  ifs.open("Simulations/Simulation 0/db.txt");
   {
     std::string line;
     while (getline(ifs, line)) {

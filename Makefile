@@ -9,3 +9,6 @@ fuws:
 
 simulation0:
 	g++ -std=c++17 USeqTrie/USeqTrie.cpp WESCalc/WESCalc.cpp FUWS/FUWS.cpp "Simulations/Simulation 0/main.cpp" -o "Simulations/Simulation 0/main"
+
+simulation0_with_debug:
+	g++ -std=c++17 USeqTrie/USeqTrie.cpp WESCalc/WESCalc.cpp FUWS/FUWS.cpp "Simulations/Simulation 0/main.cpp" /root/CP/Setup/include/debug.h -o "Simulations/Simulation 0/main"

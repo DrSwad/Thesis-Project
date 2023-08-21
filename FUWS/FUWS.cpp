@@ -1,4 +1,5 @@
 #include "FUWS.hpp"
+#include "debug.h"
 #include <iostream>
 
 std::pair<WUDatabase, ItemWeight> preProcess(const WUDatabase &db) {
@@ -115,7 +116,8 @@ void findFrequentSequencesFromTrie(int minWES, const USeqTrie &candidateTrie, in
 std::vector<Sequence> FUWS(const WUDatabase &db, const ItemProbability min_sup, const ItemWeight wgt_fct) {
   auto [pdb, WAM] = preProcess(db);
   double minWES = min_sup * db.first.size() * WAM * wgt_fct;
-  std::cerr << minWES << std::endl;
+
+  debug(pdb);
 
   // int total_items = db.second.size();
   // USeqTrie candidateTrie(total_items);

@@ -46,7 +46,7 @@ UDatabase read_uncertain_database(std::string directory, std::map<std::string, i
       assert(c == '(');
       UItemset itemset;
       while (true) {
-        std::string item; ss >> item;  assert(item.back() == ':'); item.pop_back();
+        std::string item; ss >> item; assert(item.back() == ':'); item.pop_back();
         ItemProbability probability; ss >> probability;
         itemset.insert(UItem(item_id_map[item], probability));
 

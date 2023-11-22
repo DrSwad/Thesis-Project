@@ -22,7 +22,7 @@ std::pair<WUDatabase, ItemWeight> preProcess(const WUDatabase &db) {
       }
 
       for (ItemID item_id : item_ids) {
-        itemset.insert(UItem(item_id, item_max_probability[item_id]));
+        itemset[item_id] = item_max_probability[item_id];
       }
     }
   }
@@ -41,6 +41,7 @@ std::tuple<std::vector<ItemProbability>, std::vector<ItemProbability>, ItemWeigh
     for (const UItemset &itemset : seq) {
       for (const auto [item, probability] : itemset) {
         max_prs[item] = std::max(max_prs[item], probability);
+        seq_max_prs[item] = std::max(seq_max_prs[item], probability);
         max_item_weight = std::max(max_item_weight, db.second[item]);
       }
     }
@@ -79,7 +80,11 @@ WUDatabase projectedDatabase(const WUDatabase &db, ItemID item) {
 }
 
 void FUWSP(const double minWES, const WUDatabase &db, const ItemProbability seq_max_probs_product, const ItemWeight seq_max_item_weight, const ItemWeight sum_of_seq_item_weights, USeqTrie &candidateTrie, int cur_node_id) {
+  // DB();
+  // debug(minWES, db, seq_max_probs_product, seq_max_item_weight, sum_of_seq_item_weights, cur_node_id);
+
   auto [max_prs, exp_sups, max_item_weight] = determineExtensions(db);
+  // debug(max_prs, exp_sups, max_item_weight);
   int total_items = db.second.size();
   for (ItemID item_id = 0; item_id < total_items; item_id++) {
     for (char ext_type : {'i', 's'}) {
@@ -87,6 +92,7 @@ void FUWSP(const double minWES, const WUDatabase &db, const ItemProbability seq_
       ItemWeight weight_cap = std::max(seq_max_item_weight, max_item_weight);
       double w_exp_sup = exp_sup_cap * weight_cap;
       if (w_exp_sup >= minWES) {
+        // debug(item_id, ext_type);
         int child_node_id = candidateTrie.getChildNode(cur_node_id, ext_type, item_id);
         FUWSP(minWES, projectedDatabase(db, item_id), seq_max_probs_product * max_prs[item_id], std::max(seq_max_item_weight, db.second[item_id]), sum_of_seq_item_weights + db.second[item_id], candidateTrie, child_node_id);
       }
@@ -115,13 +121,11 @@ void findFrequentSequencesFromTrie(int minWES, const USeqTrie &candidateTrie, in
 
 std::vector<Sequence> FUWS(const WUDatabase &db, const ItemProbability min_sup, const ItemWeight wgt_fct) {
   auto [pdb, WAM] = preProcess(db);
-  double minWES = min_sup * db.first.size() * WAM * wgt_fct;
+  double minWES = min_sup * pdb.first.size() * WAM * wgt_fct;
 
-  debug(pdb);
-
-  // int total_items = db.second.size();
-  // USeqTrie candidateTrie(total_items);
-  // FUWSP(minWES, db, 1, 0, 0, candidateTrie, 0);
+  int total_items = pdb.second.size();
+  USeqTrie candidateTrie(total_items);
+  FUWSP(minWES, pdb, 1, 0, 0, candidateTrie, 0);
   // WESCalc(db, candidateTrie);
 
   std::vector<Sequence> seqs;

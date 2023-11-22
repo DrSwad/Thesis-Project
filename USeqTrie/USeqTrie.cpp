@@ -11,6 +11,9 @@ USeqTrie::USeqTrie(int total_items) : total_items(total_items) {
 
 int USeqTrie::getChildNode(int node_id, char ext_type, ItemID item_id) {
   int id = (ext_type == 's') * total_items + item_id;
+  while (id > (int)nodes[node_id].children_node_ids.size() - 1) {
+    nodes[node_id].children_node_ids.push_back(-1);
+  }
   if (nodes[node_id].children_node_ids[id] == -1) {
     int child_id = nodes.size();
     nodes.emplace_back(ext_type, item_id);

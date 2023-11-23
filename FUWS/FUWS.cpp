@@ -1,6 +1,5 @@
 #include "FUWS.hpp"
-#include "debug.h"
-#include <iostream>
+// #include "debug.h"
 
 std::pair<WUDatabase, ItemWeight> preProcess(const WUDatabase &db) {
   ItemWeight wgt_sum = 0;

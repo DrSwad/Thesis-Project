@@ -1,12 +1,9 @@
 import time
 
-from DataStructures.Trie import Trie
-from FUWS.FUWSequence import FUWSequence
+from FUWS.IncrementalFUWSequence import IncrementalFUWSequence
 from Parameters.FileInfo import FileInfo
 from Parameters.ProgramVariable import ProgramVariable
-from Parameters.UserDefined import UserDefined
 from Parameters.Variable import Variable
-from Types.types import ExpectedSupport
 from UtilityTechniques.DataPreProcessing import PreProcess
 from UtilityTechniques.ProbabilityWeightAssign import WeightAssign
 from UtilityTechniques.ThresholdCalculation import ThresholdCalculation
@@ -52,7 +49,7 @@ class uWSWindow:
         previous_time = time.time()
 
         # Run FUWS algorithm to get FS and SFS from initial datasets and store store them into USeq-Trie
-        self.fssfs_trie = FUWSequence().generate_trie_of_actual_sequences()
+        self.fssfs_trie = IncrementalFUWSequence().generate_trie_of_actual_sequences()
         self.fssfs_trie.only_keep_semi_frequent_nodes()
 
         self.fssfs_trie.log_semi_frequent_nodes_in_trie(
@@ -109,7 +106,7 @@ class uWSWindow:
         prev_size_of_dataset = Variable.size_of_dataset
         Variable.size_of_dataset = len(ProgramVariable.uSDB)
 
-        self.cur_ls_trie = FUWSequence().generate_trie_of_actual_sequences()
+        self.cur_ls_trie = IncrementalFUWSequence().generate_trie_of_actual_sequences()
         self.cur_ls_trie.log_semi_frequent_nodes_in_trie(FileInfo.ls)
 
         for i in range(0, len(ProgramVariable.uSDB)):

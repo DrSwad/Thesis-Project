@@ -61,17 +61,12 @@ class FUWSequence:
                 continue
 
             # Find all the extension items and extension types possible from the current node
-            possible_item_extensions = self.determine_extendable_items_with_projections(
+            (
+                possible_item_extensions,
+                proj_max_wgt,
+            ) = self.determine_extendable_items_with_projections(
                 pSDB, cur_itemset, extension_type
             )
-
-            # Calculate maximum weight in the projection database
-            # to be used for wgt_cap calculation later
-            proj_max_wgt = 0.0
-            for item_id in possible_item_extensions:
-                assert item_id in ProgramVariable.wgt_dic
-                item_weight = ProgramVariable.wgt_dic[item_id]
-                proj_max_wgt = max(proj_max_wgt, item_weight)
 
             # Try to extend with each possible item
             for item_id in possible_item_extensions:
@@ -121,14 +116,18 @@ class FUWSequence:
         projSDB: Optional[ProjectedDatabase],
         cur_item_set: Itemset,
         extension_type: ExtensionType,
-    ) -> SortedDict[
-        ItemID,
-        tuple[ExpectedSupport, ItemProbability, ProjectedDatabase],
+    ) -> tuple[
+        SortedDict[
+            ItemID,
+            tuple[ExpectedSupport, ItemProbability, ProjectedDatabase],
+        ],
+        ItemWeight,
     ]:
         possible_item_extensions: SortedDict[
             ItemID,
             tuple[ExpectedSupport, ItemProbability, ProjectedDatabase],
         ] = SortedDict()
+        proj_max_wgt: ItemWeight = 0.0
 
         for i in range(
             0, len(ProgramVariable.pSDB) if projSDB is None else len(projSDB)
@@ -151,6 +150,10 @@ class FUWSequence:
                                 itemset[item_id],
                                 ProjectionPosition(seq_index, set_index, item_id),
                             )
+
+                            assert item_id in ProgramVariable.wgt_dic
+                            item_weight = ProgramVariable.wgt_dic[item_id]
+                            proj_max_wgt = max(proj_max_wgt, item_weight)
             else:
                 assert projSDB is not None
                 proj_pos = projSDB[i]
@@ -165,6 +168,10 @@ class FUWSequence:
                                 proj_pos.seq_index, proj_pos.set_index, item_id
                             ),
                         )
+
+                        assert item_id in ProgramVariable.wgt_dic
+                        item_weight = ProgramVariable.wgt_dic[item_id]
+                        proj_max_wgt = max(proj_max_wgt, item_weight)
 
                 for set_index in range(
                     proj_pos.set_index + 1,
@@ -192,6 +199,11 @@ class FUWSequence:
                                     ),
                                 )
 
+                    for item_id in itemset:
+                        assert item_id in ProgramVariable.wgt_dic
+                        item_weight = ProgramVariable.wgt_dic[item_id]
+                        proj_max_wgt = max(proj_max_wgt, item_weight)
+
             for item_id in current_sequence_item_extensions:
                 item_prob = current_sequence_item_extensions[item_id][0]
                 item_pos = current_sequence_item_extensions[item_id][1]
@@ -210,4 +222,4 @@ class FUWSequence:
 
                 possible_item_extensions[item_id] = (exp_sup, max_prob, proj_db)
 
-        return possible_item_extensions
+        return possible_item_extensions, proj_max_wgt

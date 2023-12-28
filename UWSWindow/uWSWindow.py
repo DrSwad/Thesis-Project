@@ -80,18 +80,8 @@ class uWSWindow:
             # WeightAssign.assign(ProgramVariable.itemList)
             WeightAssign.manual_assign(input_weight_file)
 
-            prev_upto_sum = WAMCalculation.upto_sum
-            prev_upto_wSum = WAMCalculation.upto_wSum
-            WAMCalculation.upto_wSum = 0.0
-            WAMCalculation.upto_sum = 0
-
-            WAMCalculation.update_WAM()
-
-            WAMCalculation.upto_wSum += prev_upto_wSum
-            WAMCalculation.upto_sum += prev_upto_sum
-
             previous_time = time.time()
-            self.uWSWindowMethod(UserDefined.min_sup * 2)
+            self.uWSWindowMethod()
 
             cur_time = time.time()
             FileInfo.time_info.write(str(cur_time - previous_time))
@@ -102,13 +92,21 @@ class uWSWindow:
             FileInfo.pfs.write("-----------\n")
             FileInfo.ls.write("-----------\n")
 
-    def uWSWindowMethod(self, local_min_sup: ExpectedSupport) -> None:
-        # Save the threshold and the size of the dataset to trie trie for only the incremental dataset
-        prev_min_sup = UserDefined.min_sup
-        prev_size_of_dataset = Variable.size_of_dataset
+    def uWSWindowMethod(self) -> None:
+        prev_upto_sum = WAMCalculation.upto_sum
+        prev_upto_wSum = WAMCalculation.upto_wSum
+        WAMCalculation.upto_wSum = 0.0
+        WAMCalculation.upto_sum = 0
 
-        # Set the min_sup to the given local_min_sup
-        UserDefined.min_sup = local_min_sup
+        WAMCalculation.update_WAM()
+
+        WAMCalculation.upto_wSum += prev_upto_wSum
+        WAMCalculation.upto_sum += prev_upto_sum
+
+        # Save the previous size of the dataset and
+        # set the size_of_dataset to the new dataset to
+        # build the trie for only the incremental dataset
+        prev_size_of_dataset = Variable.size_of_dataset
         Variable.size_of_dataset = len(ProgramVariable.uSDB)
 
         self.cur_ls_trie = FUWSequence().generate_trie_of_actual_sequences()
@@ -126,9 +124,8 @@ class uWSWindow:
         self.fssfs_trie.evaluate_semi_frequency_flags(self.fssfs_trie.root_node)
         self.fssfs_trie.only_keep_semi_frequent_nodes()
 
-        # Since the PFS nodes are already in the trie, it's safe to update the threshold now
+        # Since the PFS nodes are already in the trie, it's safe to update the dataset size now
         pfs_semi_threshold = ThresholdCalculation.get_semi_wgt_exp_sup()
-        UserDefined.min_sup = prev_min_sup
         Variable.size_of_dataset = prev_size_of_dataset + len(ProgramVariable.uSDB)
         Variable.WAM = WAMCalculation.upto_wSum / WAMCalculation.upto_sum
 

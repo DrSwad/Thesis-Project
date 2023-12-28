@@ -79,16 +79,6 @@ class uWSIncPlus:
             # WeightAssign.assign(ProgramVariable.itemList)
             WeightAssign.manual_assign(input_weight_file)
 
-            prev_upto_sum = WAMCalculation.upto_sum
-            prev_upto_wSum = WAMCalculation.upto_wSum
-            WAMCalculation.upto_wSum = 0.0
-            WAMCalculation.upto_sum = 0
-
-            WAMCalculation.update_WAM()
-
-            WAMCalculation.upto_wSum += prev_upto_wSum
-            WAMCalculation.upto_sum += prev_upto_sum
-
             previous_time = time.time()
             self.uWSIncPlusMethod(UserDefined.min_sup * 2)
 
@@ -102,7 +92,17 @@ class uWSIncPlus:
             FileInfo.ls.write("-----------\n")
 
     def uWSIncPlusMethod(self, local_min_sup: ExpectedSupport) -> None:
-        # Save the threshold and the size of the dataset to trie trie for only the incremental dataset
+        prev_upto_sum = WAMCalculation.upto_sum
+        prev_upto_wSum = WAMCalculation.upto_wSum
+        WAMCalculation.upto_wSum = 0.0
+        WAMCalculation.upto_sum = 0
+
+        WAMCalculation.update_WAM()
+
+        WAMCalculation.upto_wSum += prev_upto_wSum
+        WAMCalculation.upto_sum += prev_upto_sum
+
+        # Save the threshold and the size of the dataset to build the trie for only the incremental dataset
         prev_min_sup = UserDefined.min_sup
         prev_size_of_dataset = Variable.size_of_dataset
 

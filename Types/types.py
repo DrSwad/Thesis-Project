@@ -6,14 +6,20 @@ from sortedcontainers import SortedDict, SortedList
 ItemID: TypeAlias = str
 ItemProbability: TypeAlias = float
 ItemWeight: TypeAlias = float
+UItem: TypeAlias = tuple[ItemID, ItemProbability]
+
 ExpectedSupport: TypeAlias = float
 WeightedExpectedSupport: TypeAlias = float
-UItem: TypeAlias = tuple[ItemID, ItemProbability]
+WeightMap: TypeAlias = dict[ItemID, ItemWeight]
+
 Itemset: TypeAlias = SortedList[ItemID]  # type: ignore
 UItemset: TypeAlias = SortedDict[ItemID, ItemProbability]  # type: ignore
+
 USequence: TypeAlias = list[UItemset]
+IUSequence: TypeAlias = tuple[int, USequence]
+
 UDatabase: TypeAlias = list[USequence]
-WeightMap: TypeAlias = dict[ItemID, ItemWeight]
+IUDatabase: TypeAlias = list[IUSequence]
 
 
 class ExtensionType(Enum):
@@ -41,3 +47,4 @@ class ProjectionPosition:
 
 
 ProjectedDatabase: TypeAlias = list[ProjectionPosition]
+IProjectedDatabase: TypeAlias = SortedDict[int, list[ProjectionPosition]]  # type: ignore

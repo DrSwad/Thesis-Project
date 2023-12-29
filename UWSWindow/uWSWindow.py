@@ -20,18 +20,13 @@ class uWSWindow:
         window_size: int,
     ) -> None:
         # Initialize file information where you wish to save the outputs of the algorithm
-        FileInfo.set_initial_file_info(
-            input_database_file,
-            f"{output_directory}/fs.txt",
-            f"{output_directory}/sfs.txt",
-            f"{output_directory}/pfs.txt",
-        )
-        FileInfo.ls = open(f"{output_directory}/ls.txt", "w")
+        FileInfo.initial_dataset = open(input_database_file, "r")
+        FileInfo.fs = open(f"{output_directory}/fs.txt", "w")
+        FileInfo.sfs = open(f"{output_directory}/sfs.txt", "w")
         FileInfo.time_info = open(f"{output_directory}/time_info_plus_v0.txt", "w")
         assert FileInfo.initial_dataset is not None
         assert FileInfo.fs is not None
         assert FileInfo.sfs is not None
-        assert FileInfo.pfs is not None
 
         # Preprocess dataset in the way that is described in our algorithm
         PreProcess().read_and_process_input_database()
@@ -56,10 +51,8 @@ class uWSWindow:
         # database, if we remove them now then we'll have to recalculate everything about them again
         # self.fssfs_trie.only_keep_semi_frequent_nodes()
 
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()
-        )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
+        self.fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        self.fssfs_trie.log_trie(
             FileInfo.sfs,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),
@@ -68,11 +61,6 @@ class uWSWindow:
         cur_time = time.time()
         FileInfo.time_info.write(str(cur_time - previous_time))
         FileInfo.time_info.write("\n")
-
-        FileInfo.fs.write("-----------\n")
-        FileInfo.sfs.write("-----------\n")
-        FileInfo.pfs.write("-----------\n")
-        FileInfo.ls.write("-----------\n")
 
         for input_increment_file in input_increment_files:
             FileInfo.initial_dataset = open(input_increment_file, "r")
@@ -87,11 +75,6 @@ class uWSWindow:
             cur_time = time.time()
             FileInfo.time_info.write(str(cur_time - previous_time))
             FileInfo.time_info.write("\n")
-
-            FileInfo.fs.write("-----------\n")
-            FileInfo.sfs.write("-----------\n")
-            FileInfo.pfs.write("-----------\n")
-            FileInfo.ls.write("-----------\n")
 
     def uWSWindowMethod(self) -> None:
         prev_upto_sum = WAMCalculation.upto_sum
@@ -111,7 +94,7 @@ class uWSWindow:
         Variable.size_of_dataset = len(ProgramVariable.uSDB)
 
         self.cur_ls_trie = IncrementalFUWSequence().generate_trie_of_actual_sequences()
-        self.cur_ls_trie.log_semi_frequent_nodes_in_trie(FileInfo.ls)
+        self.cur_ls_trie.log_trie(FileInfo.ls)
 
         for i in range(0, len(ProgramVariable.uSDB)):
             self.fssfs_trie.actual_support_calculation(i)
@@ -126,20 +109,12 @@ class uWSWindow:
         self.fssfs_trie.only_keep_semi_frequent_nodes()
 
         # Since the PFS nodes are already in the trie, it's safe to update the dataset size now
-        pfs_semi_threshold = ThresholdCalculation.get_semi_wgt_exp_sup()
         Variable.size_of_dataset = prev_size_of_dataset + len(ProgramVariable.uSDB)
         Variable.WAM = WAMCalculation.upto_wSum / WAMCalculation.upto_sum
 
         # Writing tries to file
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.pfs,
-            pfs_semi_threshold,
-            ThresholdCalculation.get_semi_wgt_exp_sup(),
-        )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()
-        )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
+        self.fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        self.fssfs_trie.log_trie(
             FileInfo.sfs,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),

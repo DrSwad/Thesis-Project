@@ -17,10 +17,8 @@ class uWSInc:
         self.fssfs_trie.evaluate_semi_frequency_flags(self.fssfs_trie.root_node)
         self.fssfs_trie.only_keep_semi_frequent_nodes()
 
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()
-        )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
+        self.fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        self.fssfs_trie.log_trie(
             FileInfo.sfs,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),
@@ -66,10 +64,8 @@ class uWSInc:
         self.fssfs_trie = FUWSequence().generate_trie_of_actual_sequences()
         self.fssfs_trie.only_keep_semi_frequent_nodes()
 
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()
-        )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
+        self.fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        self.fssfs_trie.log_trie(
             FileInfo.sfs,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),

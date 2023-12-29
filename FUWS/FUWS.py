@@ -18,12 +18,6 @@ class FUWS:
         input_weight_file: str,
         output_directory: str,
     ) -> None:
-        FileInfo.set_initial_file_info(
-            input_database_file,
-            f"{output_directory}/fs.txt",
-            f"{output_directory}/sfs.txt",
-            f"{output_directory}/pfs.txt",
-        )
         FileInfo.initial_dataset = open(input_database_file, "r")
         FileInfo.fs = open(f"{output_directory}/fs.txt", "w")
         FileInfo.sfs = open(f"{output_directory}/sfs.txt", "w")
@@ -50,10 +44,8 @@ class FUWS:
         fssfs_trie.only_keep_semi_frequent_nodes()
 
         # Write the desired patterns (FS & SFS) into files
-        fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()
-        )
-        fssfs_trie.log_semi_frequent_nodes_in_trie(
+        fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        fssfs_trie.log_trie(
             FileInfo.sfs,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),

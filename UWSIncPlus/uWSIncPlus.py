@@ -54,10 +54,8 @@ class uWSIncPlus:
         self.fssfs_trie = FUWSequence().generate_trie_of_actual_sequences()
         self.fssfs_trie.only_keep_semi_frequent_nodes()
 
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()
-        )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
+        self.fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        self.fssfs_trie.log_trie(
             FileInfo.sfs,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),
@@ -66,11 +64,6 @@ class uWSIncPlus:
         cur_time = time.time()
         FileInfo.time_info.write(str(cur_time - previous_time))
         FileInfo.time_info.write("\n")
-
-        FileInfo.fs.write("-----------\n")
-        FileInfo.sfs.write("-----------\n")
-        FileInfo.pfs.write("-----------\n")
-        FileInfo.ls.write("-----------\n")
 
         for input_increment_file in input_increment_files:
             FileInfo.initial_dataset = open(input_increment_file, "r")
@@ -85,11 +78,6 @@ class uWSIncPlus:
             cur_time = time.time()
             FileInfo.time_info.write(str(cur_time - previous_time))
             FileInfo.time_info.write("\n")
-
-            FileInfo.fs.write("-----------\n")
-            FileInfo.sfs.write("-----------\n")
-            FileInfo.pfs.write("-----------\n")
-            FileInfo.ls.write("-----------\n")
 
     def uWSIncPlusMethod(self, local_min_sup: ExpectedSupport) -> None:
         prev_upto_sum = WAMCalculation.upto_sum
@@ -111,7 +99,7 @@ class uWSIncPlus:
         Variable.size_of_dataset = len(ProgramVariable.uSDB)
 
         self.cur_ls_trie = FUWSequence().generate_trie_of_actual_sequences()
-        self.cur_ls_trie.log_semi_frequent_nodes_in_trie(FileInfo.ls)
+        self.cur_ls_trie.log_trie(FileInfo.ls)
 
         for i in range(0, len(ProgramVariable.uSDB)):
             self.fssfs_trie.actual_support_calculation(i)
@@ -132,15 +120,13 @@ class uWSIncPlus:
         Variable.WAM = WAMCalculation.upto_wSum / WAMCalculation.upto_sum
 
         # Writing tries to file
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
+        self.fssfs_trie.log_trie(
             FileInfo.pfs,
             pfs_semi_threshold,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
         )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
-            FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()
-        )
-        self.fssfs_trie.log_semi_frequent_nodes_in_trie(
+        self.fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        self.fssfs_trie.log_trie(
             FileInfo.sfs,
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),

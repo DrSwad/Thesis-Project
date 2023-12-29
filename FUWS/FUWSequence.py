@@ -29,9 +29,6 @@ class FUWSequence:
         # Find all the candidate sequences satisfying the threshold and construct the trie under the root
         self.generate_trie_of_candidate_sequences()
 
-        # Log the candidate nodes of the trie
-        self.trie.log_semi_frequent_nodes_in_trie()
-
         # Reset the support values of nodes to 0 and find total candidates in the trie
         self.trie.prepare_trie_for_actual_support_calculation()
 
@@ -41,6 +38,9 @@ class FUWSequence:
 
         # Update the flags indicating semi frequency at each node
         self.trie.evaluate_semi_frequency_flags()
+
+        # Log all the nodes of the trie
+        self.trie.log_trie(semi_frequent_marked_only=False)
 
         return self.trie
 

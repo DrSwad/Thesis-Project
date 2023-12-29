@@ -169,11 +169,12 @@ class Trie:
 
         return len(cur_node.descendants) + cur_node.semi_frequent
 
-    def log_semi_frequent_nodes_in_trie(
+    def log_trie(
         self,
         file: Optional[IO[str]] = None,
         lower_limit: Optional[WeightedExpectedSupport] = None,
         upper_limit: Optional[WeightedExpectedSupport] = None,
+        semi_frequent_marked_only: Optional[bool] = True,
         cur_node: Optional[TrieNode] = None,
         cur_seq: Optional[str] = None,
     ) -> None:
@@ -188,24 +189,33 @@ class Trie:
             cur_seq = cur_seq + "(" + cur_node.item_id + ")"
 
         if (
-            cur_node.semi_frequent
+            (not semi_frequent_marked_only or cur_node.semi_frequent)
             and cur_node is not self.root_node
             and (lower_limit is None or cur_node.support_value >= lower_limit)
             and (upper_limit is None or cur_node.support_value < upper_limit)
         ):
             if file is None:
-                print(cur_seq)
+                print(f"{cur_seq}: {str(round(cur_node.support_value, 2))}")
             else:
                 assert file is not None
-                file.write(cur_seq)
-                file.write(": ")
-                file.write(str(round(cur_node.support_value, 2)))
-                file.write("\n")
+                file.write(f"{cur_seq}: {str(round(cur_node.support_value, 2))}\n")
 
         for child_node in cur_node.descendants.values():
-            self.log_semi_frequent_nodes_in_trie(
-                file, lower_limit, upper_limit, child_node, cur_seq
+            self.log_trie(
+                file,
+                lower_limit,
+                upper_limit,
+                semi_frequent_marked_only,
+                child_node,
+                cur_seq,
             )
+
+        if cur_node is self.root_node:
+            if file is None:
+                print("-----------")
+            else:
+                assert file is not None
+                file.write("-----------\n")
 
         return
 

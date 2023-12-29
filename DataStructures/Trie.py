@@ -83,9 +83,7 @@ class Trie:
             child_node_max_exp = 0.0
             for set_index, itemset_prob in new_itemset_all_occurrences:
                 child_node_max_exp = max(child_node_max_exp, itemset_prob)
-            child_node.support_value += (child_node_max_exp * new_seq_wgt_sum) / float(
-                new_ln
-            )
+            child_node.support_value += (child_node_max_exp * new_seq_wgt_sum) / new_ln
 
             self.actual_support_calculation(
                 seq_index,
@@ -144,7 +142,8 @@ class Trie:
             cur_node = self.root_node
 
         if (
-            cur_node.support_value + Variable.eps
+            cur_node is self.root_node
+            or cur_node.support_value + Variable.eps
             >= ThresholdCalculation.get_semi_wgt_exp_sup()
         ):
             cur_node.semi_frequent = True
@@ -190,6 +189,7 @@ class Trie:
 
         if (
             cur_node.semi_frequent
+            and cur_node is not self.root_node
             and (lower_limit is None or cur_node.support_value >= lower_limit)
             and (upper_limit is None or cur_node.support_value < upper_limit)
         ):
@@ -243,168 +243,3 @@ class Trie:
         new_node = TrieNode(True, extension_type, item_id, support_value)
         cur_node.descendants[new_edge] = new_node
         return
-
-
-"""    def update(self, curNode, curSeq, i, support):
-        if i == len(curSeq) - 1:
-            curNode.supportValue += support
-            return
-        if curSeq[i] == "(" or curSeq[i] == ")":
-            self.update(curNode, curSeq, i + 1, support)
-        else:
-            if curSeq[i - 1] == "(":
-                self.update(
-                    curNode.descendants[(curSeq[i], "S")], curSeq, i + 1, support
-                )
-            else:
-                self.update(
-                    curNode.descendants[(curSeq[i], "I")], curSeq, i + 1, support
-                )
-        return
-
-    def insertion(self, curNode, curSeq, i, support):
-        # print(curSeq, ' curSeq at insertion ...........')
-        if i == len(curSeq) - 1:
-            curNode.marker = True
-            curNode.supportValue = float(support)
-            return
-
-        if curSeq[i] == "(" or curSeq[i] == ")":
-            self.insertion(curNode, curSeq, i + 1, support)
-        else:
-            # print(curSeq[i-1], curSeq[i], ' printing at insertion function...........')
-            # print(curNode.descendants)
-            if curSeq[i - 1] == "(":
-                if (curSeq[i], "S") not in curNode.descendants:
-                    newNode = TrieNode(False, "S", curSeq[i], 0.0, False)
-                    curNode.descendants[(curSeq[i], "S")] = newNode
-                self.insertion(
-                    curNode.descendants[(curSeq[i], "S")], curSeq, i + 1, support
-                )
-            else:
-                # print(i, 'I')
-                if (curSeq[i], "I") not in curNode.descendants:
-                    newNode = TrieNode(False, "I", curSeq[i], 0.0, False)
-                    curNode.descendants[(curSeq[i], "I")] = newNode
-                self.insertion(
-                    curNode.descendants[(curSeq[i], "I")], curSeq, i + 1, support
-                )
-        return
-
-    def deletion(self, curNode, curSeq, i):
-        if i == len(curSeq) - 1:
-            curNode.supportValue = 0.0
-            curNode.marker = False
-            return
-        if curSeq[i] == "(" or curSeq[i] == ")":
-            self.deletion(curNode, curSeq, i + 1)
-        else:
-            if curSeq[i - 1] == "(":
-                nextNode = curNode.descendants[(curSeq[i], "I")]
-                self.deletion(nextNode, i + 1)
-                if len(nextNode.descendants) == 0:
-                    curNode.descendants.pop((curSeq[i], "I"))
-            else:
-                nextNode = curNode.descendants[(curSeq[i], "S")]
-                self.deletion(nextNode, i + 1)
-                if len(nextNode.descendants) == 0:
-                    curNode.descendants.pop((curSeq[i], "S"))
-        return
-
-    def trieIntoFilePS(self, curNode, curSeq):
-        if curNode.extnType == "I" and curNode.label is not None:
-            curSeq = curSeq[: len(curSeq) - 1] + ", " + curNode.label + ")"
-        elif curNode.label is not None:
-            curSeq = curSeq + "(" + curNode.label + ")"
-        if curNode.marker:
-            FileInfo.ls.write(curSeq)
-            FileInfo.ls.write(" ")
-            FileInfo.ls.write(str(round(curNode.supportValue, 2)))
-            FileInfo.ls.write("\n")
-        for dscnt in curNode.descendants.values():
-            self.trieIntoFilePS(dscnt, curSeq)
-        return
-
-    def updateWithInsertion(self, curNode, curSeq, i, support):
-        if i == len(curSeq) - 1:
-            # print(i, ' Markedddddddddd', curSeq)
-            curNode.marker = True
-            curNode.updateflag = True
-            # print(curNode.supportValue, 'before updateing with insertion')
-            curNode.supportValue += float(support)
-            # print(curNode.supportValue, 'after updating with insertion')
-            return
-        if curSeq[i] == "(" or curSeq[i] == ")":
-            self.updateWithInsertion(curNode, curSeq, i + 1, support)
-        else:
-            if curSeq[i - 1] == "(":
-                # print(i, 'S')
-                if (curSeq[i], "S") not in curNode.descendants.keys():
-                    newNode = TrieNode(False, "S", curSeq[i], 0.0, False)
-                    curNode.descendants[(curSeq[i], "S")] = newNode
-                self.updateWithInsertion(
-                    curNode.descendants[(curSeq[i], "S")], curSeq, i + 1, support
-                )
-            else:
-                # print(i, 'I')
-                if (curSeq[i], "I") not in curNode.descendants.keys():
-                    newNode = TrieNode(False, "I", curSeq[i], 0.0, False)
-                    curNode.descendants[(curSeq[i], "I")] = newNode
-                self.updateWithInsertion(
-                    curNode.descendants[(curSeq[i], "I")], curSeq, i + 1, support
-                )
-        return
-
-    def updateWithlsTrieBuild(self, cur_node, cur_seq):
-        tmp_cur_seq = copy.deepcopy(cur_seq)
-        if cur_node.extnType == "I" and cur_node.label is not None:
-            if len(cur_seq) == 0:
-                print(cur_node.label, cur_node.extnType)
-            tmp_cur_seq.pop()
-            tmp_cur_seq.append(cur_node.label)
-            tmp_cur_seq.append(")")
-
-        elif cur_node.label is not None:
-            tmp_cur_seq.append("(")
-            tmp_cur_seq.append(cur_node.label)
-            tmp_cur_seq.append(")")
-
-        if cur_node.marker is False and cur_node.label is not None:
-            self.cur_ls_trie.insertion(
-                self.cur_ls_trie.root_node, tmp_cur_seq, 0, float(cur_node.supportValue)
-            )
-
-        tmp_dscnt = copy.deepcopy(cur_node.descendants)
-        cur_node.descendants = dict()
-        for dscnt_key, dscnt_value in tmp_dscnt.items():
-            childs = self.updateWithlsTrieBuild(dscnt_value, tmp_cur_seq)
-            if childs > 0:
-                cur_node.descendants[dscnt_key] = dscnt_value
-        return len(cur_node.descendants) + cur_node.marker
-
-    def deleteWholeTrie(self, curNode):
-        for dscnt in curNode.descendants.values():
-            self.deleteWholeTrie(dscnt)
-        curNode.descendants.clear()
-        return
-
-    def searchSupport(self, curNode, curSeq, i):
-        if i == len(curSeq) - 1:
-            return curNode.supportValue
-        if curSeq[i] == "(" or curSeq[i] == ")":
-            return self.searchSupport(curNode, curSeq, i + 1)
-        else:
-            if curSeq[i - 1] == "(":
-                if (curSeq[i], "S") in curNode.descendants:
-                    return self.searchSupport(
-                        curNode.descendants[(curSeq[i], "S")], curSeq, i + 1
-                    )
-                else:
-                    return 0.0
-            else:
-                if (curSeq[i], "I") in curNode.descendants:
-                    return self.searchSupport(
-                        curNode.descendants[(curSeq[i], "I")], curSeq, i + 1
-                    )
-                else:
-                    return 0.0 """

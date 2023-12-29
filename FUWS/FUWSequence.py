@@ -22,7 +22,7 @@ from UtilityTechniques.ThresholdCalculation import ThresholdCalculation
 
 class FUWSequence:
     def __init__(self) -> None:
-        self.trie = Trie(TrieNode(False, None, None, 0.0))
+        self.trie = Trie(TrieNode(True, None, None, 0.0))
         return
 
     def generate_trie_of_actual_sequences(self) -> Trie:

@@ -11,7 +11,7 @@ class PreProcess:
     def __init__(self) -> None:
         ProgramVariable.uSDB = []
         ProgramVariable.pSDB = []
-        ProgramVariable.itemList = list()
+        ProgramVariable.item_list = list()
         ProgramVariable.cnt_dic = dict()
 
     def read_and_process_input_database(self) -> None:
@@ -53,8 +53,8 @@ class PreProcess:
                     val = seqMap[item]
                     tnewSeqList[item] = val
 
-                    if item not in ProgramVariable.itemList:
-                        ProgramVariable.itemList.append(str(item))
+                    if item not in ProgramVariable.item_list:
+                        ProgramVariable.item_list.append(str(item))
                     if item not in ProgramVariable.cnt_dic:
                         ProgramVariable.cnt_dic[item] = 1
                     else:
@@ -68,8 +68,8 @@ class PreProcess:
                     else:
                         seqMap[item] = val
 
-                    if item not in ProgramVariable.itemList:
-                        ProgramVariable.itemList.append(str(item))
+                    if item not in ProgramVariable.item_list:
+                        ProgramVariable.item_list.append(str(item))
                     if item not in ProgramVariable.cnt_dic:
                         ProgramVariable.cnt_dic[item] = 1
                     else:

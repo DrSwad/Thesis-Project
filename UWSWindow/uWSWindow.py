@@ -50,7 +50,11 @@ class uWSWindow:
 
         # Run FUWS algorithm to get FS and SFS from initial datasets and store store them into USeq-Trie
         self.fssfs_trie = IncrementalFUWSequence().generate_trie_of_actual_sequences()
-        self.fssfs_trie.only_keep_semi_frequent_nodes()
+
+        # We should not remove non-semi-frequent nodes, because these are very likely to get
+        # high heuristic values again when we recalculate heuristics once updates are made to the
+        # database, if we remove them now then we'll have to recalculate everything about them again
+        # self.fssfs_trie.only_keep_semi_frequent_nodes()
 
         self.fssfs_trie.log_semi_frequent_nodes_in_trie(
             FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup()

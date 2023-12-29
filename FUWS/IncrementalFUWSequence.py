@@ -24,13 +24,18 @@ from UtilityTechniques.ThresholdCalculation import ThresholdCalculation
 class IncrementalFUWSequence(FUWSequence):
     def generate_trie_of_candidate_sequences(
         self,
-        pSDB: Optional[ProjectedDatabase],
-        cur_node: TrieNode,
-        cur_itemset: Itemset,
-        max_pr: ItemProbability,
-        max_wgt: ItemWeight,
-        curLen: int,
+        pSDB: Optional[ProjectedDatabase] = None,
+        cur_node: Optional[TrieNode] = None,
+        cur_itemset: Optional[Itemset] = None,
+        max_pr: ItemProbability = 1,
+        max_wgt: ItemWeight = 0,
+        curLen: int = 0,
     ) -> None:
+        if cur_node is None:
+            cur_node = self.trie.root_node
+        if cur_itemset is None:
+            cur_itemset = SortedList()
+
         for extension_type in [ExtensionType.i, ExtensionType.s]:
             # The first item extension must be of type s-extension
             if pSDB is None and extension_type == ExtensionType.i:
@@ -86,7 +91,7 @@ class IncrementalFUWSequence(FUWSequence):
     def incrementally_determine_extendable_items_with_projections(
         self,
         projSDB: Optional[ProjectedDatabase],
-        cur_item_set: Itemset,
+        cur_itemset: Itemset,
         max_pr: ItemProbability,
         max_wgt: ItemWeight,
         extension_type: ExtensionType,
@@ -154,10 +159,10 @@ class IncrementalFUWSequence(FUWSequence):
                 ):
                     itemset = ProgramVariable.pSDB[proj_pos.seq_index][set_index]
                     proper_subset = True
-                    if len(cur_item_set) >= len(itemset):
+                    if len(cur_itemset) >= len(itemset):
                         proper_subset = False
                     else:
-                        for item_id in cur_item_set:
+                        for item_id in cur_itemset:
                             if item_id not in itemset:
                                 proper_subset = False
                                 break

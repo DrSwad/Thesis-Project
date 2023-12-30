@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import TypeAlias
+from typing import Deque, TypeAlias
 
 from sortedcontainers import SortedDict, SortedList
 
@@ -19,7 +19,7 @@ USequence: TypeAlias = list[UItemset]
 IUSequence: TypeAlias = tuple[int, USequence]
 
 UDatabase: TypeAlias = list[USequence]
-IUDatabase: TypeAlias = list[IUSequence]
+IUDatabase: TypeAlias = Deque[IUSequence]
 
 
 class ExtensionType(Enum):

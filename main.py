@@ -27,7 +27,7 @@ if __name__ == "__main__":
     )
 
     if algorithm == "FUWS":
-        FUWS("Files/input.txt", "Files/manual_weights.txt", "Files/result")
+        FUWS("Files/input_kosarak.txt", "Files/weights.csv", "Files/result")
     elif algorithm == "UWSInc":
         uWSInc(
             "Files/input.txt",
@@ -44,9 +44,11 @@ if __name__ == "__main__":
         )
     elif algorithm == "UWSWindow":
         uWSWindow(
-            "Files/input.txt",
-            ["Files/inc_1.txt", "Files/inc_2.txt"],
-            "Files/manual_weights.txt",
+            # "Files/input.txt",
+            # ["Files/inc_1.txt", "Files/inc_2.txt"],
+            "Files/input_kosarak.txt",
+            [],
+            "Files/weights.csv",
             "Files/result",
-            10000,
+            100000000,
         )

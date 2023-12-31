@@ -28,11 +28,15 @@ class ExtensionType(Enum):
     none = "None"
 
 
+SequenceIndex: TypeAlias = int
+SetIndex: TypeAlias = int
+
+
 class ProjectionPosition:
     def __init__(
         self,
-        seq_index: int,
-        set_index: int,
+        seq_index: SequenceIndex,
+        set_index: SetIndex,
         item_id: ItemID,
     ) -> None:
         self.seq_index = seq_index
@@ -47,4 +51,8 @@ class ProjectionPosition:
 
 
 ProjectedDatabase: TypeAlias = list[ProjectionPosition]
-IProjectedDatabase: TypeAlias = SortedDict[int, list[ProjectionPosition]]  # type: ignore
+IProjectedDatabase: TypeAlias = SortedDict[SequenceIndex, SetIndex]  # type: ignore
+
+MaxProbDP: TypeAlias = SortedDict[SequenceIndex, ItemProbability]  # type: ignore
+CapDP: TypeAlias = SortedDict[SequenceIndex, WeightedExpectedSupport]  # type: ignore
+ActualDP: TypeAlias = SortedDict[SequenceIndex, list[tuple[SetIndex, ItemProbability]]]  # type: ignore

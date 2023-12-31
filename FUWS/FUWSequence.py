@@ -40,7 +40,7 @@ class FUWSequence:
         self.trie.evaluate_semi_frequency_flags()
 
         # Log all the nodes of the trie
-        self.trie.log_trie(semi_frequent_marked_only=False)
+        # self.trie.log_trie(semi_frequent_marked_only=False)
 
         return self.trie
 

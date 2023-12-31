@@ -26,9 +26,10 @@ class FUWS:
         PreProcess().read_and_process_input_database()
 
         # Assign weights of all items
-
-        # WeightAssign.assign(ProgramVariable.itemList)  # using generated weights
-        WeightAssign.manual_assign(input_weight_file)  # manually
+        # Using generated weights
+        WeightAssign.assign(input_weight_file, ProgramVariable.item_list)
+        # Manually
+        # WeightAssign.manual_assign(input_weight_file)
 
         # WAM will be calculated && DataBase size will be been updated
 
@@ -43,6 +44,8 @@ class FUWS:
         # Remove false patterns using the calculated weighted-support values
         fssfs_trie.only_keep_semi_frequent_nodes()
 
+        end_time = time.time()
+
         # Write the desired patterns (FS & SFS) into files
         fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
         fssfs_trie.log_trie(
@@ -50,8 +53,6 @@ class FUWS:
             ThresholdCalculation.get_semi_wgt_exp_sup(),
             ThresholdCalculation.get_wgt_exp_sup(),
         )
-
-        end_time = time.time()
 
         print("Total required time(in Seconds): ", end_time - start_time)
 

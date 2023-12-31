@@ -9,6 +9,8 @@ from Types.types import (
     ItemID,
     ItemProbability,
     ItemWeight,
+    SequenceIndex,
+    SetIndex,
     WeightedExpectedSupport,
 )
 from UtilityTechniques.ThresholdCalculation import ThresholdCalculation
@@ -24,7 +26,7 @@ class TrieNode:
     ) -> None:
         self.semi_frequent = semi_frequent
         self.extension_type = extension_type
-        self.item_id = item_id  # Rename to item_id
+        self.item_id = item_id
         self.support_value = support_value
         self.descendants: dict[tuple[ItemID, ExtensionType], TrieNode] = dict()
 
@@ -99,8 +101,8 @@ class Trie:
         self,
         extension_type: ExtensionType,
         item_id: ItemID,
-        seq_index: int,
-        current_itemset_all_occurrences: list[tuple[int, ItemProbability]],
+        seq_index: SequenceIndex,
+        current_itemset_all_occurrences: list[tuple[SetIndex, ItemProbability]],
     ) -> list[tuple[int, ItemProbability]]:
         new_set_indices: list[tuple[int, ItemProbability]] = []
 

@@ -30,6 +30,7 @@ class ExtensionType(Enum):
 
 SequenceIndex: TypeAlias = int
 SetIndex: TypeAlias = int
+Edge: TypeAlias = tuple[ItemID, ExtensionType]
 
 
 class ProjectionPosition:

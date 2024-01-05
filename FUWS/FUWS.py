@@ -4,6 +4,7 @@ from DataStructures.Trie import Trie
 from FUWS.FUWSequence import FUWSequence
 from Parameters.FileInfo import FileInfo
 from Parameters.ProgramVariable import ProgramVariable
+from Parameters.UserDefined import UserDefined
 from Parameters.Variable import Variable
 from UtilityTechniques.DataPreProcessing import PreProcess
 from UtilityTechniques.ProbabilityWeightAssign import WeightAssign
@@ -27,9 +28,9 @@ class FUWS:
 
         # Assign weights of all items
         # Using generated weights
-        WeightAssign.assign(input_weight_file, ProgramVariable.item_list)
+        # WeightAssign.assign(input_weight_file, ProgramVariable.item_list)
         # Manually
-        # WeightAssign.manual_assign(input_weight_file)
+        WeightAssign.manual_assign(input_weight_file)
 
         # WAM will be calculated && DataBase size will be been updated
 

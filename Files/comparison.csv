@@ -1,0 +1,3 @@
+Dataset,min_sup,wgt_fct,mu,actual_frequent_sequences,prev_false_positives,proposed_false_positives,prev_false_positives%,proposed_false_positives%,prev_time,proposed_time
+SIGN,20%,1.0,1.0,62,1179,76,95.00,55.07,7.95,5.52
+LEVIATHAN,2%,1.0,1.0,526,21281,1192,97.59,69.38,330.68,768.31

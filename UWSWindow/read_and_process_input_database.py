@@ -96,10 +96,10 @@ def read_and_process_input_database(
 
     # Assign weights of all items.
     # Using generated weights.
-    # WeightAssign.assign(wgt_file, item_weights, list(new_item_freq.keys()))
+    WeightAssign.assign(wgt_file, item_weights, list(new_item_freq.keys()))
     # Manually. Assign only if not assigned before.
-    if not item_weights:
-        WeightAssign.manual_assign(wgt_file, item_weights)
+    # if not item_weights:
+    #     WeightAssign.manual_assign(wgt_file, item_weights)
 
     for item_id, item_freq in new_item_freq.items():
         total_item_freq += item_freq

@@ -179,16 +179,23 @@ class Trie:
         semi_frequent_marked_only: Optional[bool] = True,
         cur_node: Optional[TrieNode] = None,
         cur_seq: Optional[str] = None,
-    ) -> None:
+        count_nodes_only: bool = False,
+    ) -> int:
         if cur_node is None:
             cur_node = self.root_node
         if cur_seq is None:
             cur_seq = ""
 
-        if cur_node.extension_type == ExtensionType.i and cur_node.item_id is not None:
-            cur_seq = cur_seq[: len(cur_seq) - 1] + cur_node.item_id + ")"
-        elif cur_node.item_id is not None:
-            cur_seq = cur_seq + "(" + cur_node.item_id + ")"
+        visited_counter = 0
+
+        if not count_nodes_only:
+            if (
+                cur_node.extension_type == ExtensionType.i
+                and cur_node.item_id is not None
+            ):
+                cur_seq = cur_seq[: len(cur_seq) - 1] + cur_node.item_id + ")"
+            elif cur_node.item_id is not None:
+                cur_seq = cur_seq + "(" + cur_node.item_id + ")"
 
         if (
             (not semi_frequent_marked_only or cur_node.semi_frequent)
@@ -196,30 +203,33 @@ class Trie:
             and (lower_limit is None or cur_node.support_value >= lower_limit)
             and (upper_limit is None or cur_node.support_value < upper_limit)
         ):
-            if file is None:
-                print(f"{cur_seq}: {str(round(cur_node.support_value, 2))}")
-            else:
-                assert file is not None
-                file.write(f"{cur_seq}: {str(round(cur_node.support_value, 2))}\n")
+            visited_counter += 1
+            if not count_nodes_only:
+                if file is None:
+                    print(f"{cur_seq}: {str(round(cur_node.support_value, 2))}")
+                else:
+                    assert file is not None
+                    file.write(f"{cur_seq}: {str(round(cur_node.support_value, 2))}\n")
 
         for child_node in cur_node.descendants.values():
-            self.log_trie(
+            visited_counter += self.log_trie(
                 file,
                 lower_limit,
                 upper_limit,
                 semi_frequent_marked_only,
                 child_node,
                 cur_seq,
+                count_nodes_only,
             )
 
-        if cur_node is self.root_node:
+        if not count_nodes_only and cur_node is self.root_node:
             if file is None:
                 print("-----------")
             else:
                 assert file is not None
                 file.write("-----------\n")
 
-        return
+        return visited_counter
 
     def merge_ls_with_fssfs_trie(
         self, cur_node_ls: TrieNode, cur_node_fssfs: TrieNode

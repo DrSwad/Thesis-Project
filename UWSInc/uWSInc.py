@@ -50,8 +50,10 @@ class uWSInc:
 
         # Assign weights of all items
 
-        # WeightAssign.assign(ProgramVariable.itemList)  # using generated weights
-        WeightAssign.manual_assign(input_weight_file)  # manually
+        WeightAssign.assign(
+            input_weight_file, ProgramVariable.item_list
+        )  # using generated weights
+        # WeightAssign.manual_assign(input_weight_file)  # manually
 
         # WAM will be calculated && DataBase size will be been updated
 

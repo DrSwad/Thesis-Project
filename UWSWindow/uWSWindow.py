@@ -105,19 +105,33 @@ def process_new_data(
     # Run Incremental FUWS algorithm to get FS and SFS from initial datasets and store them into USeq-Trie
     previous_time = time.time()
     update_trie(iu_SDB, ip_SDB, item_weights, minSemiWES, root_node)
+    total_nodes = log_trie(
+        root_node=root_node,
+        cap_lower_limit=minSemiWES,
+        count_nodes_only=True,
+    )
+    semi_frequent_nodes = log_trie(
+        root_node=root_node,
+        actual_lower_limit=minSemiWES,
+        count_nodes_only=True,
+    )
+    false_positives = total_nodes - semi_frequent_nodes
+    print(
+        semi_frequent_nodes,
+        false_positives,
+        false_positives / total_nodes * 100,
+    )
     cur_time = time.time()
-
-    # Log all the nodes of the trie
-    # self.incrementalFUWSequence.trie.log_trie()
+    print("Total required time(in Seconds): ", cur_time - previous_time)
 
     # Log answers into file
-    log_trie(root_node, fs, minWES)
-    log_trie(
-        root_node,
-        sfs,
-        minSemiWES,
-        minWES,
-    )
+    # log_trie(root_node=root_node, file=fs, actual_lower_limit=minWES)
+    # log_trie(
+    #     root_node=root_node,
+    #     file=sfs,
+    #     actual_lower_limit=minSemiWES,
+    #     actual_upper_limit=minWES,
+    # )
 
     # Log time
     time_info.write(str(cur_time - previous_time))

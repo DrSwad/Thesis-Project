@@ -9,43 +9,46 @@ from UWSIncPlus.uWSIncPlus import uWSIncPlus
 from UWSWindow.uWSWindow import uWSWindow
 
 if __name__ == "__main__":
-    # initialize user given parameters by default values.
-    UserDefined.min_sup = 0.2
-    UserDefined.wgt_factor = 1.0
-    Variable.mu = 0.70
-
-    # Select the algorithm based on command line input
+    # Select the algorithm and parameters based on command line input
+    assert len(sys.argv) >= 6
+    algo_name = sys.argv[1]
+    UserDefined.min_sup = float(sys.argv[2])
+    UserDefined.wgt_factor = float(sys.argv[3])
+    Variable.mu = float(sys.argv[4])
+    input_file_name = sys.argv[5]
+    inc_file_names = sys.argv[6:]
 
     algorithm: Literal["FUWS", "UWSInc", "UWSIncPlus", "UWSWindow"] = (
         "FUWS"
-        if len(sys.argv) <= 1 or sys.argv[1] == "FUWS"
+        if algo_name == "FUWS"
         else "UWSInc"
-        if sys.argv[1] == "UWSInc"
+        if algo_name == "UWSInc"
         else "UWSIncPlus"
-        if sys.argv[1] == "UWSIncPlus"
+        if algo_name == "UWSIncPlus"
         else "UWSWindow"
     )
 
     if algorithm == "FUWS":
-        FUWS("Files/input.txt", "Files/manual_weights.txt", "Files/result")
+        # FUWS("Files/input.txt", "Files/manual_weights.txt", "Files/result")
+        FUWS(input_file_name, "Files/weights.csv", "Files/result")
     elif algorithm == "UWSInc":
         uWSInc(
-            "Files/input.txt",
-            ["Files/inc_1.txt", "Files/inc_2.txt"],
-            "Files/manual_weights.txt",
+            input_file_name,
+            inc_file_names,
+            "Files/weights.txt",
             "Files/result",
         )
     elif algorithm == "UWSIncPlus":
         uWSIncPlus(
-            "Files/input.txt",
-            ["Files/inc_1.txt", "Files/inc_2.txt"],
-            "Files/manual_weights.txt",
+            input_file_name,
+            inc_file_names,
+            "Files/weights.txt",
             "Files/result",
         )
     elif algorithm == "UWSWindow":
         uWSWindow(
-            ["Files/input.txt", "Files/inc_1.txt", "Files/inc_2.txt"],
-            "Files/manual_weights.txt",
+            [input_file_name] + inc_file_names,
+            "Files/weights.csv",
             "Files/result",
             UserDefined.min_sup,
             UserDefined.wgt_factor,

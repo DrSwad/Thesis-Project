@@ -28,9 +28,9 @@ class FUWS:
 
         # Assign weights of all items
         # Using generated weights
-        # WeightAssign.assign(input_weight_file, ProgramVariable.item_list)
+        WeightAssign.assign(input_weight_file, ProgramVariable.item_list)
         # Manually
-        WeightAssign.manual_assign(input_weight_file)
+        # WeightAssign.manual_assign(input_weight_file)
 
         # WAM will be calculated && DataBase size will be been updated
 
@@ -42,18 +42,32 @@ class FUWS:
         # Find the frequent and semi-frequent patterns
         fssfs_trie = FUWSequence().generate_trie_of_actual_sequences()
 
+        # Log all the nodes of the trie
+        total_nodes = fssfs_trie.log_trie(
+            semi_frequent_marked_only=False, count_nodes_only=True
+        )
+        semi_frequent_nodes = fssfs_trie.log_trie(
+            semi_frequent_marked_only=True, count_nodes_only=True
+        )
+        false_positives = total_nodes - semi_frequent_nodes
+        print(
+            semi_frequent_nodes,
+            false_positives,
+            false_positives / total_nodes * 100,
+        )
+
         # Remove false patterns using the calculated weighted-support values
         fssfs_trie.only_keep_semi_frequent_nodes()
 
         end_time = time.time()
 
         # Write the desired patterns (FS & SFS) into files
-        fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
-        fssfs_trie.log_trie(
-            FileInfo.sfs,
-            ThresholdCalculation.get_semi_wgt_exp_sup(),
-            ThresholdCalculation.get_wgt_exp_sup(),
-        )
+        # fssfs_trie.log_trie(FileInfo.fs, ThresholdCalculation.get_wgt_exp_sup())
+        # fssfs_trie.log_trie(
+        #     FileInfo.sfs,
+        #     ThresholdCalculation.get_semi_wgt_exp_sup(),
+        #     ThresholdCalculation.get_wgt_exp_sup(),
+        # )
 
         print("Total required time(in Seconds): ", end_time - start_time)
 
